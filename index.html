@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>alvin.fun - Random Facts</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Space Mono', monospace;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            color: #333;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .top-brand {
+            background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+            padding: 0.5rem;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        header {
+            background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .matrix-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1rem;
+            margin: 0;
+            color: rgba(255, 255, 255, 0.7);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            font-weight: normal;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin: 0;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .fact-container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 600px;
+            width: 90%;
+            margin: 2rem 0;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #fact {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            transition: opacity 0.2s;
+        }
+
+        button {
+            background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+            border: none;
+            color: white;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            font-family: 'Space Mono', monospace;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        footer {
+            padding: 1rem;
+            text-align: center;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            position: relative;
+            z-index: 2;
+            color: white;
+        }
+
+        footer span {
+            color: #ff6b6b;
+        }
+
+        @media screen and (max-width: 768px) {
+            h1 {
+                font-size: 0.875rem;
+            }
+            
+            h2 {
+                font-size: 1.75rem;
+            }
+            
+            .fact-container {
+                padding: 1.5rem;
+                margin: 1rem 0;
+                min-height: 120px;
+            }
+            
+            #fact {
+                font-size: 1rem;
+                line-height: 1.5;
+            }
+            
+            button {
+                padding: 0.875rem 1.75rem;
+                font-size: 1rem;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            h2 {
+                font-size: 1.5rem;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+            
+            .fact-container {
+                padding: 1rem;
+                width: 95%;
+            }
+            
+            button {
+                padding: 0.75rem 1.5rem;
+                width: 90%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas class="matrix-bg" id="matrixCanvas"></canvas>
+    <div class="top-brand">
+        <h1>alvin.fun</h1>
+    </div>
+    <header>
+        <h2>Random Fun Facts Generator</h2>
+    </header>
+    <div class="content">
+        <div class="fact-container">
+            <p id="fact">Click the button below to get a random fact!</p>
+        </div>
+        <button onclick="showRandomFact()">Show Another Fact</button>
+    </div>
+    <footer>
+        Coded with ❤ by Alvin
+    </footer>
+
+    <script>
+        // Matrix background
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            drawGrid();
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const dotSize = 2;
+            const spacing = 20;
+            const opacity = 0.2;
+
+            ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
+
+            for (let x = 0; x < canvas.width; x += spacing) {
+                for (let y = 0; y < canvas.height; y += spacing) {
+                    ctx.beginPath();
+                    ctx.arc(x, y, dotSize, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+
+        drawGrid();
+
+        // Random facts functionality
+        const facts = [
+            "Water expands as it freezes, making ice less dense than liquid water.",
+            "A teaspoon of honey represents the life work of 12 bees.",
+            "The speed of light is about 299,792 kilometers per second.",
+            "Octopuses have three hearts and blue blood.",
+            "The Great Barrier Reef is the largest living structure on Earth.",
+            "Bananas are berries, but strawberries are not.",
+            "An adult human body contains approximately 37.2 trillion cells.",
+            "Sharks existed before trees.",
+            "A day on Venus is longer than a year on Venus.",
+            "There are more stars in the universe than grains of sand on Earth.",
+            "Drinking water helps boost metabolism.",
+            "The human brain uses about 20% of the body's total energy.",
+            "Laughter strengthens the immune system.",
+            "Walking 10,000 steps a day can significantly improve cardiovascular health.",
+            "The average adult needs 7–9 hours of sleep per night.",
+            "Vitamin D is primarily produced by exposure to sunlight.",
+            "Handwashing with soap removes 99% of germs.",
+            "Dark chocolate contains antioxidants that are good for the heart.",
+            "Regular exercise can boost memory and cognitive skills.",
+            "Stress can weaken your immune system over time.",
+            "Cleopatra lived closer in time to the moon landing than to the construction of the Great Pyramid.",
+            "The Eiffel Tower can grow up to 15 cm taller during summer due to thermal expansion.",
+            "The ancient Romans used urine as a cleaning agent.",
+            "The Great Wall of China is over 13,000 miles long.",
+            "Leonardo da Vinci was ambidextrous.",
+            "The first-ever email was sent in 1971.",
+            "Vikings never wore horned helmets.",
+            "The oldest written recipe is for beer.",
+            "The Oxford English Dictionary took over 70 years to compile.",
+            "The handshake originated as a gesture to show you were unarmed.",
+            "Russia spans 11 time zones.",
+            "Antarctica is the driest place on Earth.",
+            "Mount Everest grows about 4 millimeters each year.",
+            "The Amazon rainforest produces 20% of the world's oxygen.",
+            "Canada has the most lakes of any country in the world.",
+            "The Dead Sea is the lowest point on Earth's surface.",
+            "Africa is the only continent located in all four hemispheres.",
+            "Iceland uses almost 100% renewable energy.",
+            "The Sahara Desert is the largest hot desert in the world.",
+            "There are no bridges over the Amazon River.",
+            "Honey never spoils.",
+            "The average person walks the equivalent of five times around the world in their lifetime.",
+            "A group of flamingos is called a flamboyance.",
+            "The longest hiccuping spree lasted 68 years.",
+            "A jiffy is an actual unit of time—1/100th of a second.",
+            "Snails can sleep for three years.",
+            "Mosquitoes are the deadliest animals in the world.",
+            "A leap year isn't a leap year if it's divisible by 100 but not 400.",
+            "Pineapples take about two years to grow.",
+            "The dot over the letter 'i' is called a tittle.",
+            "The shortest war in history was between Britain and Zanzibar in 1896. It lasted 38 minutes.",
+            "A group of crows is called a murder.",
+            "The heart of a shrimp is located in its head.",
+            "Sloths can hold their breath longer than dolphins can.",
+            "Sea otters hold hands while sleeping to keep from drifting apart.",
+            "The unicorn is the national animal of Scotland.",
+            "Cows have best friends and get stressed when separated from them.",
+            "The longest recorded flight of a chicken is 13 seconds.",
+            "Ketchup was once sold as medicine.",
+            "A bolt of lightning contains enough energy to toast 100,000 slices of bread.",
+            "There are more fake flamingos in the world than real ones.",
+            "The human nose can detect over 1 trillion different scents.",
+            "A small child could swim through the veins of a blue whale.",
+            "Dolphins sleep with one eye open.",
+            "The first oranges weren't orange, but green.",
+            "You can't hum while holding your nose.",
+            "The world's largest snowflake was 15 inches wide.",
+            "The human brain has more connections than there are stars in the Milky Way.",
+            "A crocodile can't stick its tongue out.",
+            "The longest wedding veil was longer than 63 football fields.",
+            "Koalas sleep up to 22 hours a day.",
+            "You can't snore and dream at the same time.",
+            "Most lipsticks contain fish scales.",
+            "The shortest commercial flight lasts 57 seconds.",
+            "It rains diamonds on Jupiter and Saturn.",
+            "A sneeze can travel at over 100 miles per hour.",
+            "Humans share 60% of their DNA with bananas.",
+            "A group of owls is called a parliament.",
+            "Wombat poop is cube-shaped.",
+            "Banging your head against a wall for one hour burns 150 calories.",
+            "A blue whale's tongue can weigh as much as an elephant.",
+            "Peanuts are not nuts, they are legumes.",
+            "Elephants are the only mammals that can't jump.",
+            "One in every 2000 babies is born with a tooth.",
+            "Avocados are technically berries.",
+            "Your tongue is the only muscle in your body that is attached from one end.",
+            "The moon has moonquakes.",
+            "A day on Mars is just over 24 hours.",
+            "The Mona Lisa has no eyebrows.",
+            "Some turtles can breathe through their butts.",
+            "You share your birthday with at least 9 million other people.",
+            "Some cats are allergic to humans.",
+            "More people are allergic to cow's milk than any other food.",
+            "Butterflies taste with their feet.",
+            "An astronaut's height can change by up to 2 inches when they are in space.",
+            "In Switzerland, it's illegal to own just one guinea pig.",
+            "More people are bitten by people than by sharks.",
+            "Polar bear skin is black.",
+            "Cows can sleep standing up but can only dream lying down.",
+            "The first computer virus was created in 1983.",
+            "The longest human beard ever measured 17 feet.",
+            "A group of frogs is called an army.",
+            "An elephant's memory is so good it can remember something for over 70 years.",
+            "Sloths can take up to a month to digest their food.",
+            "There is a species of jellyfish that is biologically immortal.",
+            "The human body contains around 100,000 miles of blood vessels.",
+            "Hummingbirds are the only birds that can fly backward.",
+            "An average cloud weighs about 1 million pounds.",
+            "The Earth is the only planet not named after a god.",
+            "Humans are the only species that can blush.",
+            "The first alarm clock could only ring at 4 a.m.",
+            "Cats can't taste sweetness.",
+            "There are no two zebras with the same stripes.",
+            "Bees can recognize human faces.",
+            "The first Olympic Games were held in 776 BC in Greece.",
+            "Jellyfish have been around for more than 500 million years.",
+            "More people die from falling coconuts than from shark attacks.",
+            "The longest commercial flight in history was 22 hours long.",
+            "The tallest mountain on Earth is Mauna Kea in Hawaii, which is taller than Mount Everest if measured from its base.",
+            "A panda's diet is 99% bamboo.",
+            "The average person spends about six months of their life waiting for red lights to turn green.",
+            "Your body contains enough fat to make seven bars of soap.",
+            "The human brain can store the equivalent of about 300 hours of television.",
+            "The word 'nerd' was first coined by Dr. Seuss in 1950.",
+            "There is a species of mushroom that can clean radioactive waste.",
+            "The total weight of all the ants on Earth is greater than the weight of all the humans.",
+            "You can't sneeze with your eyes open.",
+            "More than 80% of the ocean is unexplored.",
+            "In a year, there are approximately 31,536,000 seconds.",
+            "If you could fold a piece of paper 42 times, it would reach the moon.",
+            "You can't smell a skunk's spray until it's about 10 feet away."
+        ];
+
+        // Create a copy of facts array to work with
+        let remainingFacts = [...facts];
+        
+        function showRandomFact() {
+            const factElement = document.getElementById('fact');
+            
+            // If we've shown all facts, display a message
+            if (remainingFacts.length === 0) {
+                factElement.style.opacity = 0;
+                setTimeout(() => {
+                    factElement.textContent = "You've seen all the facts! Refresh the page to start over.";
+                    factElement.style.opacity = 1;
+                }, 200);
+                return;
+            }
+            
+            // Get a random index from remaining facts
+            const randomIndex = Math.floor(Math.random() * remainingFacts.length);
+            
+            // Get the fact and remove it from remainingFacts
+            const fact = remainingFacts.splice(randomIndex, 1)[0];
+            
+            // Display the fact with fade effect
+            factElement.style.opacity = 0;
+            setTimeout(() => {
+                factElement.textContent = fact;
+                factElement.style.opacity = 1;
+            }, 200);
+        }
+
+        // Show first random fact on page load
+        showRandomFact();
+    </script>
+</body>
+</html>
